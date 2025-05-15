@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useAuth, RedirectToSignIn } from "@clerk/clerk-react"
 
 import ButtonScan from "./ButtonScan"
@@ -11,14 +11,37 @@ import { ScanService } from "../services/scan.service"
 
 const Scanner = () => {
   const [vulns, setVulns] = useState([])
-  const [userId, setUserId] = useState<string>("")
   const [target, setTarget] = useState<string>("")
   const [isUrl, setIsUrl] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
   const [touched, setTouched] = useState(false)
   const [focused, setFocused] = useState(false)
-  const { isSignedIn } = useAuth()
+  const [redirect, setRedirect] = useState(false)
+  const { isSignedIn, userId, getToken } = useAuth()
+
+  useEffect(() => {
+    const fetchLastScan = async () => {
+      if (isSignedIn) {
+        setLoading(true)
+        const token = await getToken()
+
+        await ScanService.getLastScan(String(token)).then((response) => {
+          try {
+            const data = response
+            setVulns(data.vulns)
+            console.log(data)
+          } catch (err: any) {
+            console.log(err)
+            setLoading(false)
+          } finally {
+            setLoading(false)
+          }
+        })
+      }
+    }
+
+    fetchLastScan()
+  }, [isSignedIn, getToken])
 
   const executeScan = async () => {
     if (!isUrl || loading) {
@@ -26,22 +49,27 @@ const Scanner = () => {
     }
 
     if (!isSignedIn) {
-      <RedirectToSignIn />
+      setRedirect(true)
     }
 
-    setLoading(true)
-    await ScanService.executeScan(userId, target).then((response) => {
-      setError(null)
-      try {
-        const data = response
-        setVulns(data.vulns)
-      } catch (err: any) {
-        console.log(err)
-        setError(err.message || "Error desconocido")
-      } finally {
-        setLoading(false)
-      }
-    })
+    if (isSignedIn) {
+      setLoading(true)
+      const token = await getToken()
+
+      await ScanService.executeScan(userId, target, String(token)).then(
+        (response) => {
+          try {
+            const data = response
+            setVulns(data.vulns)
+          } catch (err: any) {
+            console.log(err)
+            setLoading(false)
+          } finally {
+            setLoading(false)
+          }
+        }
+      )
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,6 +89,10 @@ const Scanner = () => {
     } catch (_) {
       return false
     }
+  }
+
+  if (redirect) {
+    return <RedirectToSignIn />
   }
 
   return (
@@ -92,13 +124,19 @@ const Scanner = () => {
               onScanClick={executeScan}
               loading={loading}
               isValidUrl={isUrl}
-              isSignedIn={isSignedIn}
             />
           </div>
           <div className="min-h-10">
             {!isUrl && touched && focused && (
-              <p className={`mt-2 text-sm text-red-600 dark:text-red-500`}>
+              <p className={`mt-2 text-sm text-red-600`}>
                 <span className="font-medium">Oops!</span> Put a valid URL.
+              </p>
+            )}
+
+            {loading && (
+              <p className={`mt-2 text-sm text-blue-600`}>
+                <span className="font-medium">Executing Scan...</span> Please
+                wait, took around 4 minutes..
               </p>
             )}
           </div>
