@@ -6,12 +6,33 @@ import ButtonVulnDetails from "./ButtonVulnDetails"
 type Props = {
   vulns: any[]
   loading: boolean
+  isSignedIn?: boolean
+  isMockData?: boolean
+  scanData?: any
 }
 
-function TableVulns({ vulns, loading }: Props) {
+function TableVulns({
+  vulns,
+  loading,
+  isSignedIn,
+  isMockData,
+  scanData,
+}: Props) {
   return (
     <>
-      <div className="py-7 px-3 min-h-[500px]">
+      <div
+        className={`${
+          !isSignedIn || isMockData
+            ? "blur-xs pointer-events-none opacity-80"
+            : ""
+        } py-7 px-3 min-h-[500px] `}
+      >
+        <h2 className="text-xl font-bold mb-4">
+          Last scan:{" "}
+          <span className="font-light">
+            {scanData.target ? scanData.target : "Not excecuted yet"}
+          </span>
+        </h2>
         <DataTable
           value={vulns}
           loading={loading}
@@ -28,7 +49,26 @@ function TableVulns({ vulns, loading }: Props) {
           emptyMessage={"Vulnerabilities not found"}
         >
           <Column field="name" header="Name"></Column>
-          <Column field="cwe" header="CWE"></Column>
+          <Column
+            field="cwe"
+            header="CWE"
+            body={(rowData) =>
+              rowData.cwe !== "N/A" ? (
+                <a
+                  className="text-blue-500 hover:underline"
+                  href={`https://appsec.backslash.security/cwe/${
+                    rowData.cwe.split("-")[1]
+                  }`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {rowData.cwe}
+                </a>
+              ) : (
+                <span className="text-gray-400">{rowData.cwe}</span>
+              )
+            }
+          ></Column>
           <Column
             field="severity"
             header="Severity"
@@ -37,7 +77,7 @@ function TableVulns({ vulns, loading }: Props) {
           <Column
             field="actions"
             header="Actions"
-            body={ButtonVulnDetails}
+            body={(rowData) => <ButtonVulnDetails vuln={rowData} />}
           ></Column>
         </DataTable>
       </div>

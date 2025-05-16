@@ -9,3 +9,9 @@ body {
   border-radius: 10px;
   overflow: hidden;
 }
+
+.p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link {
+    background: #ffffff;
+    border-color: #1756de;
+    color: #1756de;
+}

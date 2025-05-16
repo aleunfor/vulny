@@ -11,16 +11,12 @@ function Header({}: Props) {
   return (
     <>
       <nav className="border-gray-200">
-        <div className="border border-gray-200 bg-gray-500/5 rounded-full px-6 py-4 mt-2 max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
+        <div className="bg-white rounded-full px-6 py-4 mt-2 max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
           <a
             href="https://flowbite.com/"
             className="flex items-center space-x-3 rtl:space-x-reverse"
           >
-            <img
-              src="https://flowbite.com/docs/images/logo.svg"
-              className="h-8"
-              alt="Flowbite Logo"
-            />
+            <img src="/vulny.svg" className="h-12" alt="Flowbite Logo" />
             <span className="self-center text-2xl font-extrabold whitespace-nowrap dark:text-gray-800">
               Vulny
             </span>

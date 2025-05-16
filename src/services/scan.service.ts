@@ -42,4 +42,14 @@ export class ScanService {
     })
     return response.data
   }
+
+  static async getUserScans(token: string): Promise<any> {
+    const response = await axios.get(`${apiUrl}/scans/`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    return response.data
+  }
 }
