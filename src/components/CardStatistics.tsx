@@ -33,7 +33,7 @@ export default function CardStatistics({ qtyVulns, severity, loading }: Props) {
           {severity.toUpperCase()}
         </h5>
         <p className="text-base font-medium inline-flex items-center">
-          {loading && qtyVulns ? (
+          {loading ? (
             <>
               <svg
                 aria-hidden="true"

@@ -88,6 +88,7 @@ const Scanner = () => {
     if (isSignedIn) {
       setLoading(true)
       setLoadingStatistics(true)
+      setActiveIndex(0)
       const token = await getToken()
 
       await ScanService.executeScan(userId, target, String(token)).then(
@@ -197,7 +198,7 @@ const Scanner = () => {
             {loading && (
               <p className={`mt-2 text-sm text-blue-600`}>
                 <span className="font-medium">Executing Scan...</span> Please
-                wait, took around 4 minutes..
+                wait, took about 4 minutes..
               </p>
             )}
           </div>

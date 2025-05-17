@@ -19,7 +19,7 @@ export default function ButtonScan({
         className={`flex items-center text-white ${
           loading || !isValidUrl
             ? "cursor-not-allowed disabled:hover:cursor-not-allowed disabled:bg-blue-400 font-medium rounded-lg text-sm px-5 py-2.5 ml-2"
-            : "bg-blue-600 hover:bg-blue-800 focus:ring-2 focus:ring-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 ml-2 focus:outline-none hover:cursor-pointer"
+            : "bg-blue-600 hover:bg-blue-800 transition focus:ring-2 focus:ring-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 ml-2 focus:outline-none hover:cursor-pointer"
         }`}
         onClick={onScanClick}
       >

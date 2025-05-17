@@ -13,7 +13,7 @@ function Header({}: Props) {
       <nav className="border-gray-200">
         <div className="bg-white rounded-full px-6 py-4 mt-2 max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
           <a
-            href="https://flowbite.com/"
+            href="/"
             className="flex items-center space-x-3 rtl:space-x-reverse"
           >
             <img src="/vulny.svg" className="h-12" alt="Flowbite Logo" />

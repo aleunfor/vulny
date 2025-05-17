@@ -28,7 +28,7 @@ function TableVulns({
         } py-7 px-3 min-h-[500px] `}
       >
         <h2 className="text-xl font-bold mb-4">
-          Last scan:{" "}
+          Results for Last Scan:{" "}
           <span className="font-light">
             {scanData.target ? scanData.target : "Not excecuted yet"}
           </span>
