@@ -68,7 +68,7 @@ const Scanner = () => {
         })
       }
 
-      if (isSignedIn && vulns.length === 0) {
+      if ((isSignedIn && vulns.length === 0) || !isSignedIn) {
         await fetchMockData()
       }
     }
@@ -205,9 +205,11 @@ const Scanner = () => {
         </form>
       </SectionContainer>
 
-      <SectionContainer>
-        <Statistics statistics={statistics} loading={loadingStatistics} />
-      </SectionContainer>
+      {isSignedIn && (
+        <SectionContainer>
+          <Statistics statistics={statistics} loading={loadingStatistics} />
+        </SectionContainer>
+      )}
 
       <SectionContainer>
         <TabMenu

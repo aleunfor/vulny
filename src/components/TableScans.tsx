@@ -64,10 +64,17 @@ function Scans({ isSignedIn }: Props) {
             minHeight: "30rem",
             borderRadius: "10px",
           }}
-          emptyMessage={"Vulnerabilities not found"}
+          emptyMessage={"Scans not found"}
         >
           <Column field="_id" header="ID"></Column>
           <Column field="target" header="Target"></Column>
+          <Column
+            field="qtyVulns"
+            header="Vulnerabilities"
+            body={(rowData) => (
+              <>{rowData.vulns.length > 0 ? rowData.vulns.length : 0}</>
+            )}
+          ></Column>
           <Column
             field="createdAt"
             header="Created At"
@@ -83,10 +90,7 @@ function Scans({ isSignedIn }: Props) {
             field="actions"
             header="Actions"
             body={(rowData) => (
-              <ButtonDownloadPdf
-                vulns={rowData.vulns}
-                scanId={rowData._id}
-              />
+              <ButtonDownloadPdf vulns={rowData.vulns} scanId={rowData._id} />
             )}
           ></Column>
         </DataTable>

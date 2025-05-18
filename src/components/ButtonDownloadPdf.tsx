@@ -12,6 +12,10 @@ type Props = {
 
 export default function ButtonVulnDetails({ vulns, scanId }: Props) {
   const downloadPdf = () => {
+    if (vulns.length === 0) {
+      return
+    }
+
     let keys = [] as string[]
 
     if (vulns.length > 0) {
@@ -35,7 +39,12 @@ export default function ButtonVulnDetails({ vulns, scanId }: Props) {
       <button
         onClick={downloadPdf}
         type="button"
-        className="flex items-center text-white bg-blue-600 hover:bg-blue-800 transition focus:ring-2 focus:ring-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 ml-2 focus:outline-none cursor-pointer"
+        className={`flex items-center text-white ${
+          vulns.length === 0
+            ? "cursor-not-allowed disabled:hover:cursor-not-allowed disabled:bg-blue-400 font-medium rounded-lg text-sm px-5 py-2.5 ml-2"
+            : "bg-blue-600 hover:bg-blue-800 transition focus:ring-2 focus:ring-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 ml-2 focus:outline-none hover:cursor-pointer"
+        }`}
+        disabled={vulns.length === 0}
       >
         Download
         <DocumentIcon className="inline-block w-4 h-4 ml-1" />

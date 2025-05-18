@@ -27,7 +27,7 @@ export default function CardStatistics({ qtyVulns, severity, loading }: Props) {
       <div
         className={`block max-w-sm p-6 ${returnSeverityColor(
           severity
-        )} border-gray-200 rounded-lg hover:bg-gray-100 py-5 px-5`}
+        )} border-gray-200 rounded-lg py-5 px-5`}
       >
         <h5 className="mb-2 text-2xl font-bold tracking-tight">
           {severity.toUpperCase()}
