@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react"
 import { useAuth, RedirectToSignIn } from "@clerk/clerk-react"
 
-import ButtonScan from "./ButtonScan"
 import DescriptionApp from "./DescriptionApp"
 import SectionContainer from "./SectionContainer"
 import TableVulns from "./TableVulns"
 import Statistics from "./Statistics"
 import TableScans from "./TableScans"
-import { LinkIcon } from "@heroicons/react/20/solid"
 import { TabMenu } from "primereact/tabmenu"
 
 import { ScanService } from "../services/scan.service"
+import ScanForm from "./ScanForm"
 
 const Scanner = () => {
   const tabOptions = [
@@ -29,50 +28,56 @@ const Scanner = () => {
   const [focused, setFocused] = useState(false)
   const [redirect, setRedirect] = useState(false)
   const [isMockData, setIsMockData] = useState(false)
+  const [error, setError] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const { isSignedIn, userId, getToken } = useAuth()
 
+  const fetchMockData = async () => {
+    setLoading(true)
+    fetch("/mockData.json")
+      .then((res) => res.json())
+      .then((data) => {
+        setVulns(data)
+        setIsMockData(true)
+        setLoading(false)
+      })
+      .catch((err) => console.error("Error loading JSON:", err))
+  }
+
+  const fetchLastScan = async () => {
+    if (isSignedIn) {
+      setLoadingStatistics(true)
+      setIsMockData(false)
+      const token = await getToken()
+
+      await ScanService.getLastScan(String(token)).then((response) => {
+        try {
+          const data = response
+          setVulns(data.vulns)
+          setStatistics(data.statistics)
+          setScanData(data.scanData)
+          setLoadingStatistics(false)
+        } catch (err: any) {
+          console.log(err)
+        } finally {
+          setLoadingStatistics(false)
+          setIsMockData(false)
+        }
+      })
+    }
+
+    if ((isSignedIn && vulns.length === 0) || !isSignedIn) {
+      fetchMockData()
+    }
+  }
+
   useEffect(() => {
-    const fetchMockData = async () => {
-      setLoading(true)
-      fetch("/mockData.json")
-        .then((res) => res.json())
-        .then((data) => {
-          setVulns(data)
-          setIsMockData(true)
-          setLoading(false)
-        })
-        .catch((err) => console.error("Error loading JSON:", err))
-    }
+    setLoading(false)
+    setLoadingStatistics(false)
+    setIsMockData(false)
+  }, [])
 
-    const fetchLastScan = async () => {
-      if (isSignedIn) {
-        setLoadingStatistics(true)
-        setIsMockData(false)
-        const token = await getToken()
-
-        await ScanService.getLastScan(String(token)).then((response) => {
-          try {
-            const data = response
-            setVulns(data.vulns)
-            setStatistics(data.statistics)
-            setScanData(data.scanData)
-            setLoadingStatistics(false)
-          } catch (err: any) {
-            console.log(err)
-            setLoadingStatistics(false)
-          } finally {
-            setLoadingStatistics(false)
-            setIsMockData(false)
-          }
-        })
-      }
-
-      if ((isSignedIn && vulns.length === 0) || !isSignedIn) {
-        await fetchMockData()
-      }
-    }
-
+  useEffect(() => {
     fetchLastScan()
   }, [isSignedIn, getToken, isMockData])
 
@@ -88,27 +93,28 @@ const Scanner = () => {
     if (isSignedIn) {
       setLoading(true)
       setLoadingStatistics(true)
+      setVulns([])
       setActiveIndex(0)
       const token = await getToken()
 
-      await ScanService.executeScan(userId, target, String(token)).then(
-        (response) => {
-          try {
-            const data = response
-            setVulns(data.vulns)
-            setStatistics(data.statistics)
-            setScanData(data.scanData)
-            setIsMockData(false)
-          } catch (err: any) {
-            console.log(err)
-            setLoading(false)
-            setLoadingStatistics(false)
-          } finally {
-            setLoading(false)
-            setLoadingStatistics(false)
-          }
-        }
-      )
+      await ScanService.executeScan(userId, target, String(token))
+        .then((response) => {
+          const data = response
+          setVulns(data.vulns)
+          setStatistics(data.statistics)
+          setScanData(data.scanData)
+          setIsMockData(false)
+        })
+        .catch((err) => {
+          console.log(err)
+          setLoading(false)
+          setLoadingStatistics(false)
+          setError(true)
+        })
+        .finally(() => {
+          setLoading(false)
+          setLoadingStatistics(false)
+        })
     }
   }
 
@@ -116,6 +122,7 @@ const Scanner = () => {
     const inputValue = e.target.value
     setTarget(inputValue)
     setIsUrl(isValidUrl(inputValue))
+    setError(false)
     if (!touched) setTouched(true)
   }
 
@@ -149,7 +156,8 @@ const Scanner = () => {
 
   const isValidUrl = (value: string): boolean => {
     const regex =
-      /^(https?:\/\/)?([\w\-]+\.)+[a-z]{2,}(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/i
+      /^https?:\/\/([\w-]+\.)+([a-z]{2,})(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/i
+
     return regex.test(value)
   }
 
@@ -161,48 +169,18 @@ const Scanner = () => {
     <>
       <SectionContainer>
         <DescriptionApp />
-        <form className="max-w-xl mx-auto py-14">
-          <label className="block mb-2 text-sm font-medium text-gray-900 ">
-            Put your website URL here
-          </label>
-          <div className="flex flex-row">
-            <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-e-0 border-gray-300 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-              <LinkIcon className="w-5 h-5" />
-            </span>
-            <input
-              type="text"
-              id="website-admin"
-              className={`${
-                loading ? "cursor-not-allowed" : ""
-              } rounded-none rounded-e-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5`}
-              placeholder="https://google.com"
-              onChange={handleChange}
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              disabled={loading}
-              readOnly={loading}
-            />
-            <ButtonScan
-              onScanClick={executeScan}
-              loading={loading}
-              isValidUrl={isUrl}
-            />
-          </div>
-          <div className="min-h-10">
-            {!isUrl && touched && focused && (
-              <p className={`mt-2 text-sm text-red-600`}>
-                <span className="font-medium">Oops!</span> Put a valid URL.
-              </p>
-            )}
-
-            {loading && (
-              <p className={`mt-2 text-sm text-blue-600`}>
-                <span className="font-medium">Executing Scan...</span> Please
-                wait, took about 4 minutes..
-              </p>
-            )}
-          </div>
-        </form>
+        <ScanForm
+          target={target}
+          isUrl={isUrl}
+          loading={loading}
+          touched={touched}
+          focused={focused}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onScanClick={executeScan}
+          error={error}
+        />
       </SectionContainer>
 
       {isSignedIn && (

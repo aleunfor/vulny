@@ -22,27 +22,30 @@ function Header({}: Props) {
             </span>
           </a>
 
-          <ul className="font-medium flex flex-row p-4 md:p-0 my-2 rounded-full bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:my-2 md:border-0  text-gray-800">
-            <div className="border border-blue-500 py-1 px-2 rounded-full bg-blue-600 text-white cursor-pointer">
-              <SignedOut>
-                <SignInButton />
-              </SignedOut>
-              <SignedIn>
-                <UserButton
-                  showName
-                  appearance={{
-                    elements: {
-                      userButtonBox: {
-                        color: "white",
-                        fontWeight: "bold",
-                        borderRadius: "100px",
-                      },
+          <div className="border border-blue-500 rounded-full bg-blue-600 text-white cursor-pointer">
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="border-blue-500 bg-blue-600 hover:bg-blue-700 transition text-white font-bold py-2 px-4 rounded-full cursor-pointer">
+                  Sign In
+                </button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton
+                showName
+                appearance={{
+                  elements: {
+                    userButtonBox: {
+                      color: "white",
+                      fontWeight: "bold",
+                      borderRadius: "100px",
+                      padding: "0.2rem 0.4rem",
                     },
-                  }}
-                />
-              </SignedIn>
-            </div>
-          </ul>
+                  },
+                }}
+              />
+            </SignedIn>
+          </div>
         </div>
       </nav>
     </>
