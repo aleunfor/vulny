@@ -1,6 +1,6 @@
 # 🪲 Vulny | DAST escáner gratuito | Hackaton Clerk-Midudev Mayo 2025
 
-**Vulny** es un escáner DAST (Dynamic Application Security Testing) gratuito y fácil de usar. Permite analizar aplicaciones web en busca de vulnerabilidades de seguridad de manera sencilla y visual.
+**Vulny** es un escáner DAST (Dynamic Application Security Testing) gratuito y fácil de usar. Permite analizar entornos web en busca de vulnerabilidades de seguridad de manera sencilla y visual.
 
 ## 📃 Características
 
@@ -24,7 +24,7 @@ Al loguearse, el usuario puede realizar un escaneo dinámico, osea un escaneo en
 ## 💻 Tecnologías utilizadas
 
 - **React** (TypeScript)
-- **Clerk** para autenticación
+- **Clerk** para autenticación y gestión de usuarios
 - **TailwindCSS** para estilos
 - **PrimeReact** para componentes UI
 - **Heroicons** para iconos
